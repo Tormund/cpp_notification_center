@@ -36,7 +36,7 @@ protected:
     struct ObserverVisitor
     {
         int _typeHash;
-        std::function<void(ObserverVisitor const &, void*, int)> _setter;
+        std::function<void(void*)> _setter;
     };
 public:
     template <class ...Args>
@@ -69,7 +69,7 @@ public:
                     std::cout<<"invalid type hashes. Required: " << argType << ",but handler has - " << handler._typeHash << "\n";
                     continue;
                 }
-                handler._setter(handler, &_packedArgs, argType);
+                handler._setter(&_packedArgs);
             }
         }
         else
@@ -83,7 +83,7 @@ public:
                     std::cout<<"invalid type hashes. Required: " << argType << ",but handler has - " << handler._typeHash << "\n";
                     continue;
                 }
-                handler._setter(handler, nullptr, argType);
+                handler._setter(nullptr);
             }
         }
 
@@ -113,13 +113,7 @@ public:
         int typHash = typeid(std::function<void(Args...)>).hash_code();
         constexpr bool isVoidfunc = std::is_same<std::function<void(Args...)>, std::function<void(void)>>::value;
         notifications[notification][observerId].push_back(ObserverVisitor{
-            typHash, [cb](ObserverVisitor const & visitor, void* _packedArgs, size_t argtype){
-                if (visitor._typeHash != argtype )
-                {
-                    // raise exception here?
-                    std::cout << "Error - invalid type hash: " << argtype << ", expected - " << visitor._typeHash << std::endl;
-                    return;
-                }
+            typHash, [cb](void* _packedArgs){
                 if constexpr (!isVoidfunc)
                 {
                     std::tuple<Args...> pargs = *static_cast<std::tuple<Args...>*>(_packedArgs);
