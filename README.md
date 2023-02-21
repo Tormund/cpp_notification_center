@@ -1,7 +1,6 @@
 # Generic Notification Center for C++
-Requires `c++17`.
-Uses variadic templates to allow have different types of callback in one Notification Center.
-Also implemented runtime checks for argument types in `post` and `addObserver` function for same notification.
+Header only, requires `c++17`.
+Implementation allows to have different types of callback in same instance of Notification Center for different notifications. Also implemented runtime checks for argument types in `post` and `addObserver` function for same notification.
 Callback can be std::function or lambda.
 
 ## Example:
